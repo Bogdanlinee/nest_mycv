@@ -5,11 +5,9 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {UsersModule} from './users/users.module';
 import {ReportsModule} from './reports/reports.module';
-import {User} from './users/user.entity';
-import {Report} from './reports/report.entity';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import * as process from 'process';
-import * as db from '../ormconfig';
+import {dbConfig} from '../ormconfig';
 
 const cookieSession = require('cookie-session');
 
@@ -19,7 +17,7 @@ const cookieSession = require('cookie-session');
             isGlobal: true,
             envFilePath: `.env.${process.env.NODE_ENV}`
         }),
-        TypeOrmModule.forRoot(db),
+        TypeOrmModule.forRoot(dbConfig),
         UsersModule,
         ReportsModule,
     ],
@@ -42,9 +40,7 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(
             cookieSession({
-                keys: [
-                    this.configService.get('COOKIE_KEY')
-                ],
+                keys: [this.configService.get('COOKIE_KEY')],
             })
         ).forRoutes('*')
     }

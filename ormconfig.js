@@ -1,5 +1,9 @@
+const {DataSource} = require('typeorm')
+
 const dbConfig = {
-    synchronize: false
+    synchronize: false,
+    migrations: ['migrations/*.js'],
+    migrationsTableName: 'migrations'
 };
 
 switch (process.env.NODE_ENV) {
@@ -14,13 +18,24 @@ switch (process.env.NODE_ENV) {
         Object.assign(dbConfig, {
             type: 'sqlite',
             database: 'test.sqlite',
-            entities: ['**/*.entity.ts']
+            entities: ['**/*.entity.ts'],
+            migrationsRun: true
         })
         break;
     case 'production':
-        break;
+        Object.assign(dbConfig, {
+            type: 'postgres',
+            url: process.env.DATABASE_URL,
+            migrationsRun: true,
+            entities: ['**/*.entity.ts'],
+            ssl: {
+                rejectUnauthorized: false
+            }
+        })
     default :
         throw new Error('Unknown Environment');
 }
 
-module.exports = dbConfig;
+export {dbConfig};
+
+export default new DataSource(dbConfig);

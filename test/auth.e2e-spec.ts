@@ -40,7 +40,6 @@ describe('Authentication System (e2e)', () => {
             .send({email, password})
             .expect(201)
 
-
         const cookie = res.get('Set-Cookie');
 
         const {body} = await request(app.getHttpServer())
